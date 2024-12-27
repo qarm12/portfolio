@@ -23,9 +23,9 @@ if syms:
   all += symbols
 
 # Setting Parameters for Password
-length = 20
+length = input("Enter desired password length: ")
 amount = 10
 
 # Execution
-password = "".join(random.sample(all, length))
-print(password)
+password = "".join(random.sample(all, int(length)))
+print("New Password: " + password)
