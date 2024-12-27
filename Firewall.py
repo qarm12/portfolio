@@ -55,8 +55,8 @@ def Model(packet):
     for x in f_prediction:
         if x == 1:
             print('Firewall: allow')
-        elif x > 0 and x < 9 and x != 1:
-            print('Firewall: deny')
+        elif x is type(int) and x != 1:
+            print("deny")
         else:
             raise ValueError('Unknown action predicted')
 
