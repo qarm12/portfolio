@@ -1,19 +1,21 @@
-from scapy import IP, TCP
 import pandas as pd
 import random
+from scapy.layers.inet import TCP, IP, UDP
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 
 def generate_ipv4():
     return '.'.join([str(random.randint(0, 255)) for _ in range(4)])
 
-# Example packet generation
+# Simulated Packet Generation
 packet_ = IP(dst=generate_ipv4()) / TCP()
 packet_.show()
 
 def Model(packet):
-    data = pd.read_csv('log2.csv')
+    try:
+        data = pd.read_csv('log2.csv')
+    except:
+        raise FileNotFoundError
     print(data.head(10))
     print(data.info())
     print(data.describe())
@@ -44,21 +46,17 @@ def Model(packet):
 
     # Make a prediction
     f_prediction = firewall.predict(packet_data)
-    f_prediction_proba = firewall.predict_proba(packet_data)
+    f_score = firewall.score(test_data, test_labels)
 
-    # Ensuring prediction validity
-    #print(f"Predicted class: {f_prediction}")
-    print(f"Class probabilities: {f_prediction_proba}")
+    # Model Accuracy
+    print(str(round(f_score, 2) * 100) + "%")
+    print(f_prediction)
 
     for x in f_prediction:
         if x == 1:
             print('Firewall: allow')
-        elif x == 2:
+        elif x > 0 and x < 9 and x != 1:
             print('Firewall: deny')
-        elif x == 3:
-            print('Firewall: drop')
-        elif x == 4:
-            print('Firewall: reset-both')
         else:
             raise ValueError('Unknown action predicted')
 
